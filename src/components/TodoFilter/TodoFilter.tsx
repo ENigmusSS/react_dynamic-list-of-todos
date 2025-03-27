@@ -29,11 +29,11 @@ export const TodoFilter: React.FC<Props> = ({
             return todo.completed === (statusFilter === Statuses.completed);
           }
         })
-        .filter(todo => todo.title.includes(query));
+        .filter(todo => todo.title.toLowerCase().includes(query.toLowerCase()));
     };
 
     applyFilters(filter(todosToFilter));
-  }, [todosToFilter, statusFilter, query, applyFilters]);
+  }, [todosToFilter, statusFilter, query]);
 
   return (
     <form className="field has-addons">
@@ -68,16 +68,18 @@ export const TodoFilter: React.FC<Props> = ({
           <i className="fas fa-magnifying-glass" />
         </span>
 
-        <span className="icon is-right" style={{ pointerEvents: 'all' }}>
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-          <button
-            data-cy="clearSearchButton"
-            type="button"
-            className="delete"
-            title="X"
-            onClick={() => setQuery('')}
-          />
-        </span>
+        {query && (
+          <span className="icon is-right" style={{ pointerEvents: 'all' }}>
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+            <button
+              data-cy="clearSearchButton"
+              type="button"
+              className="delete"
+              title="X"
+              onClick={() => setQuery('')}
+            />
+          </span>
+        )}
       </p>
     </form>
   );

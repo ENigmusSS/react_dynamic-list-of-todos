@@ -13,20 +13,18 @@ import { getTodos } from './api';
 export const App: React.FC = () => {
   const [shownTodos, setShownTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isModalShown, setIsModalShown] = useState(false);
-  const [modalTodo, setModalTodo] = useState<Todo>();
-  const todosFromServer = React.useRef<Todo[]>([]);
+  const [modalTodo, setModalTodo] = useState<Todo | null>();
+  const [todosFromServer, setTodosFromServer] = useState<Todo[]>([]);
 
   const openModal = (todo: Todo) => {
     setModalTodo(todo);
-    setIsModalShown(true);
   };
 
   useEffect(() => {
     setIsLoading(true);
     getTodos().then(todos => {
-      todosFromServer.current = todos;
-      setShownTodos(todosFromServer.current);
+      setTodosFromServer(todos);
+      setShownTodos(todos);
       setIsLoading(false);
     });
   }, []);
@@ -40,23 +38,27 @@ export const App: React.FC = () => {
 
             <div className="block">
               <TodoFilter
-                todosToFilter={todosFromServer.current}
+                todosToFilter={todosFromServer}
                 applyFilters={todos => setShownTodos(todos)}
               />
             </div>
 
             <div className="block">
               {isLoading && <Loader />}
-              <TodoList todos={shownTodos} onTodoSelect={openModal} />
+              <TodoList
+                todos={shownTodos}
+                onTodoSelect={openModal}
+                selectedId={modalTodo?.id}
+              />
             </div>
           </div>
         </div>
       </div>
 
-      {isModalShown && (
+      {modalTodo && (
         <TodoModal
           todo={modalTodo as Todo}
-          onModalClose={() => setIsModalShown(false)}
+          onModalClose={() => setModalTodo(null)}
           key={`modal${modalTodo?.id}`}
         />
       )}
